@@ -1,5 +1,4 @@
-<<<<<<< Updated upstream
-﻿using System;
+using System;
 
 namespace NaughtyAttributes
 {
@@ -7,14 +6,4 @@ namespace NaughtyAttributes
     public class SortingLayerAttribute : DrawerAttribute
     {
     }
-=======
-﻿using System;
-
-namespace NaughtyAttributes
-{
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
-    public class SortingLayerAttribute : DrawerAttribute
-    {
-    }
->>>>>>> Stashed changes
 }
