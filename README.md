@@ -1,5 +1,5 @@
 # NaughtyAttributes
-[![Unity 2019.4+](https://img.shields.io/badge/unity-2019.4%2B-blue.svg)](https://unity3d.com/get-unity/download)
+[![Unity 2022.3+](https://img.shields.io/badge/unity-2022.3%2B-blue.svg)](https://unity3d.com/get-unity/download)
 [![openupm](https://img.shields.io/npm/v/com.dbrizov.naughtyattributes?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.dbrizov.naughtyattributes/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/dbrizov/NaughtyAttributes/blob/master/LICENSE)
 
@@ -13,7 +13,7 @@ The attributes that won't work in your custom editors are the meta attributes an
 If you want all of the attributes to work in your custom editors, however, you must inherit from `NaughtyInspector` and use the `NaughtyEditorGUI.PropertyField_Layout` function instead of `EditorGUILayout.PropertyField`.
 
 ## System Requirements
-Unity **2019.4** or later versions. Don't forget to include the NaughtyAttributes namespace.
+Unity **2022.3** or later versions. Don't forget to include the NaughtyAttributes namespace.
 
 ## Installation
 1. The package is available on the [openupm registry](https://openupm.com). You can install it via [openupm-cli](https://github.com/openupm/openupm-cli).
@@ -27,8 +27,8 @@ openupm add com.dbrizov.naughtyattributes
 3. You can also download it from the [Asset Store](https://assetstore.unity.com/packages/tools/utilities/naughtyattributes-129996)
 
 ## Documentation
-- [Documentation](https://dbrizov.github.io/na-docs/)
-- [Documentation Repo](https://github.com/dbrizov/na-docs)
+- [Documentation](https://naughtyattributes.com/)
+- [Documentation Repo](https://github.com/dbrizov/NaughtyAttributes-Docs)
 
 ## Support
 NaughtyAttributes is an open-source project that I am developing in my free time. If you like it you can support me by donating.
@@ -42,7 +42,7 @@ NaughtyAttributes is an open-source project that I am developing in my free time
 
 ### AllowNesting
 This attribute must be used in some cases when you want meta attributes to work inside serializable nested structs or classes.
-You can check in which cases you need to use it [here](https://dbrizov.github.io/na-docs/attributes/special_attributes/allow_nesting.html).
+You can check in which cases you need to use it [here](https://naughtyattributes.com/attributes/special_attributes/allow_nesting.html).
 
 ```csharp
 public class NaughtyComponent : MonoBehaviour
@@ -584,7 +584,7 @@ public class NaughtyComponent : MonoBehaviour
 Used for validating the fields. A field can have infinite number of validator attributes.
 
 ### MinValue / MaxValue
-Clamps integer and float fields.
+Clamps integer and float fields. The MinValue/MaxValue attributes can accept either a constant numeric value (e.g. 0, 1.5f) or the name of another field, property, or a parameterless function that returns a numeric value — use nameof(...) to reference members safely. When a name is provided, the referenced member is evaluated to obtain the min/max value at edit-time/runtime.
 
 ```csharp
 public class NaughtyComponent : MonoBehaviour
@@ -594,6 +594,18 @@ public class NaughtyComponent : MonoBehaviour
 
 	[MinValue(0.0f)]
 	public float myFloat;
+
+	[MinValue("minFloat"), MaxValue("maxFloat")]
+	public float myFloatThroughFieldName;
+
+	[MinValue(nameof(minFloatProperty)), MaxValue(nameof(maxFloatProperty))]
+	public float myFloatThroughPropertyName;
+
+	private float minFloat = -1;
+	private float maxFloat = 1;
+
+	private float minFloatProperty => minFloat;
+	private float maxFloatProperty => maxFloat;
 }
 ```
 
@@ -614,6 +626,39 @@ public class NaughtyComponent : MonoBehaviour
 ```
 
 ![inspector](https://github.com/dbrizov/NaughtyAttributes/blob/master/Assets/NaughtyAttributes/Documentation~/Required_Inspector.png)
+
+### RequiredType
+Used on game objects or components.
+When used on a game object, it checks if the game object has a component of the required type.
+When used on a component, it checks if the game object it is attached to has a component of the required type.
+
+```csharp
+public class NaughtyComponent : MonoBehaviour
+{
+    [RequiredType(typeof(Rigidbody))]
+    public GameObject gameObjectMustHaveRigidbody;
+
+    [RequiredType(typeof(Rigidbody))]
+    public Transform transformMustHaveRigidbody;
+
+    [RequiredType(typeof(IRequiredTypeTestInterface))]
+    public GameObject gameObjectMustHaveInterface;
+
+    [RequiredType(typeof(RequiredTypeTestTestObject))]
+    public GameObject gameObjectMustHaveComponent;
+
+    [RequiredType(showInfoMessageWhenEmpty: false, typeof(IRequiredTypeTestInterface))]
+    public GameObject shouldNotShowInfoMessageWhenEmpty;
+
+    [RequiredType(typeof(IRequiredTypeTestInterface), typeof(IRequiredTypeTestInterface2))]
+    public GameObject gameObjectMustHaveMultipleType;
+
+    [RequiredType(typeof(RequiredTypeTestTestObject))]
+    public RequiredTypeTest componentMustHaveAnotherComponent;
+}
+```
+
+![inspector](https://github.com/dbrizov/NaughtyAttributes/blob/master/Assets/NaughtyAttributes/Documentation~/RequiredType_Inspector.png)
 
 ### ValidateInput
 The most powerful ValidatorAttribute.
